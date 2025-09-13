@@ -1,3 +1,9 @@
+1.Contact system
 Making available social media account of alumni to the junior/user so they can easily contact them.
 Future scope:
 In future we can integrate a built-in chat system so that juniors/user can directly contact alumni without going to different platforms.
+
+2.Automated messaging
+If an institution is organising an event in a city then a automated message is sent to all of the alumnis which are resinding in the same city.
+Future scope:
+Instead of manual updating city we use an automatic system that keeps track of current city of an alumni.
