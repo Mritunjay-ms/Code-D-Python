@@ -1,0 +1,85 @@
+body {
+    font-family: system-ui, Segoe UI, Roboto, Arial;
+    background: #f4f7fb;
+    color: #222;
+    height: 100vh;
+}
+header{
+    color: white;
+    background: #2563eb;
+    height: 50px;
+    width: 99vw;
+    text-align: center;
+    padding: auto;
+    margin: auto;
+}
+#content{
+    float: left;
+    background: #2563eb;
+    color: white;
+    border: 0px;
+    margin-top: 15px;
+    padding: auto;
+    font-family: system-ui, Segoe UI, Roboto, Arial;
+    font-weight: bold;
+}
+.heads {
+    color: white;
+    background: #2563eb;
+    height: 50px;
+    width: 99vw;
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+}
+.login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+.signin {
+    background-color: white;
+    background-size: contain;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.signup{
+    background-color: white;
+    background-size: contain;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+form {
+    height: 250px;
+    width: 400px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 20px;
+    margin: 50px auto;
+    padding: 20px;
+}
+.button {
+    margin: 10px auto;
+    height: 35px;
+    width: 110px;
+    color: white;
+    font-weight: bold;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.button:hover{
+    margin: 10px auto;
+    height: 35px;
+    width: 110px;
+    color: white;
+    font-weight: bold;
+    background-color: orangered;
+    border: 2px black;
+    border-radius: 6px;
+    cursor: pointer;
+}
