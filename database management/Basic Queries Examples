@@ -1,0 +1,57 @@
+•Insert new alumni
+INSERT INTO Alumni (Email, Phone, PasswordHash, Name, BatchYear, Course, CurrentJob, Location)
+VALUES ('example@email.com', '9876543210', 'hashed_password', 'John Doe', 2022, 'B.Tech CS', 'Software Engineer', 'Delhi');
+
+•Select alumni by batch
+SELECT * FROM Alumni WHERE BatchYear = 2022;
+
+•Update alumni current job
+UPDATE Alumni SET CurrentJob = 'Senior Developer' WHERE AlumniID = 1;
+
+•Register for event
+INSERT INTO EventRegistrations (AlumniID, EventID) VALUES (1, 2);
+
+•Insert new alumni and fetch their profile immediately
+INSERT INTO Alumni (Email, Phone, PasswordHash, Name, BatchYear, Course, CurrentJob, Location)
+VALUES ('alumni1@example.com', '9876543210', 'hashed_password', 'Alice Smith', 2023, 'MCA', 'Data Analyst', 'Delhi');
+SELECT * FROM Alumni WHERE Email = 'alumni1@example.com';
+
+•Update alumni profile and check updated details
+UPDATE Alumni
+SET CurrentJob = 'Senior Data Analyst', Location = 'Bangalore'
+WHERE AlumniID = 1;
+SELECT Name, CurrentJob, Location FROM Alumni WHERE AlumniID = 1;
+
+•Post a job and list all jobs posted by that alumni
+INSERT INTO JobPostings (PostedByAlumniID, JobTitle, Description, Company, Location)
+VALUES (1, 'Backend Developer Intern', '6-month internship at TechCorp', 'TechCorp', 'Delhi');
+SELECT JobID, JobTitle, Company, Location, PostedAt FROM JobPostings WHERE PostedByAlumniID = 1 ORDER BY PostedAt DESC;
+
+•Create an event, register an alumni, and list event registrations
+INSERT INTO Events (EventName, Description, EventDate, Location)
+VALUES ('Alumni Meetup 2025', 'Annual reunion', '2025-12-15', 'Conference Hall');
+
+INSERT INTO EventRegistrations (AlumniID, EventID)
+VALUES (1, (SELECT EventID FROM Events WHERE EventName = 'Alumni Meetup 2025' LIMIT 1));
+
+SELECT er.RegistrationID, a.Name, e.EventName, er.RegisteredAt
+FROM EventRegistrations er
+JOIN Alumni a ON er.AlumniID = a.AlumniID
+JOIN Events e ON er.EventID = e.EventID
+WHERE e.EventName = 'Alumni Meetup 2025';
+
+•Post announcements and list recent ones
+INSERT INTO Announcements (Title, Content)
+VALUES ('New Career Webinar', 'Join our webinar on career growth next Friday.');
+
+SELECT AnnouncementID, Title, PostedAt FROM Announcements ORDER BY PostedAt DESC LIMIT 5;
+
+•Alumni giving feedback and contacting admin
+INSERT INTO Feedback (AlumniID, Message)
+VALUES (1, 'Please organize more skill-building workshops.');
+
+INSERT INTO ContactAdmin (AlumniID, Message)
+VALUES (1, 'How can I update my profile photo?');
+
+SELECT * FROM Feedback WHERE AlumniID = 1;
+SELECT * FROM ContactAdmin WHERE AlumniID = 1;
