@@ -1,0 +1,77 @@
+-- Alumni Table
+CREATE TABLE Alumni (
+    AlumniID INT AUTO_INCREMENT PRIMARY KEY,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Phone VARCHAR(15) UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    BatchYear YEAR NOT NULL,
+    Course VARCHAR(100) NOT NULL,
+    CurrentJob VARCHAR(150),
+    Location VARCHAR(100),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Admin Table
+CREATE TABLE Admin (
+    AdminID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100),
+    Email VARCHAR(100)
+);
+
+-- Announcements Table
+CREATE TABLE Announcements (
+    AnnouncementID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Content TEXT NOT NULL,
+    PostedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Events Table
+CREATE TABLE Events (
+    EventID INT AUTO_INCREMENT PRIMARY KEY,
+    EventName VARCHAR(255) NOT NULL,
+    Description TEXT,
+    EventDate DATE NOT NULL,
+    Location VARCHAR(150)
+);
+
+-- EventRegistrations Table
+CREATE TABLE EventRegistrations (
+    RegistrationID INT AUTO_INCREMENT PRIMARY KEY,
+    AlumniID INT,
+    EventID INT,
+    RegisteredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE CASCADE,
+    FOREIGN KEY (EventID) REFERENCES Events(EventID) ON DELETE CASCADE
+);
+
+-- JobPostings Table
+CREATE TABLE JobPostings (
+    JobID INT AUTO_INCREMENT PRIMARY KEY,
+    PostedByAlumniID INT,
+    JobTitle VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Company VARCHAR(150),
+    Location VARCHAR(100),
+    PostedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PostedByAlumniID) REFERENCES Alumni(AlumniID) ON DELETE SET NULL
+);
+
+-- Feedback Table
+CREATE TABLE Feedback (
+    FeedbackID INT AUTO_INCREMENT PRIMARY KEY,
+    AlumniID INT,
+    Message TEXT NOT NULL,
+    SentAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE SET NULL
+);
+
+-- ContactAdmin Table
+CREATE TABLE ContactAdmin (
+    ContactID INT AUTO_INCREMENT PRIMARY KEY,
+    AlumniID INT,
+    Message TEXT NOT NULL,
+    SentAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE SET NULL
+);
