@@ -1,0 +1,24 @@
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'your_mysql_username',
+  password: 'your_mysql_password',
+  database: 'AlumniManagementDB'
+});
+
+connection.connect(err => {
+  if (err) {
+    console.error('Database connection error: ', err);
+    return;
+  }
+  console.log('Connected to MySQL database.');
+});
+
+// Example query: Fetch all alumni
+connection.query('SELECT * FROM Alumni', (err, results) => {
+  if (err) throw err;
+  console.log(results);
+});
+
+module.exports = connection;
