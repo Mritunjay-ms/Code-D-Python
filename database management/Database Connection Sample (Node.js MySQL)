@@ -1,6 +1,11 @@
-const mysql = require('mysql2/promise');  // Use mysql2 with promise support
+npm install mysql2
 
-// Create a connection pool for better performance and management
+const mysql = require('mysql2/promise');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = 'your_secure_jwt_secret'; // Store this securely in env vars
+
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'your_mysql_username',
@@ -8,10 +13,10 @@ const pool = mysql.createPool({
   database: 'AlumniManagementDB',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
-// Function to execute queries with async/await
+// Reusable query function
 async function query(sql, params) {
   let connection;
   try {
@@ -26,14 +31,51 @@ async function query(sql, params) {
   }
 }
 
-// Test connection and example usage
-(async () => {
-  try {
-    const results = await query('SELECT * FROM Alumni');
-    console.log('Alumni records:', results);
-  } catch (err) {
-    console.error('Error fetching alumni:', err);
-  }
-})();
+// Register user securely
+async function registerUser(user) {
+  const { email, phone, password, name, batchYear, course, currentJob, location } = user;
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
 
-module.exports = { query, pool };
+  const sql = `
+    INSERT INTO Alumni (Email, Phone, PasswordHash, Name, BatchYear, Course, CurrentJob, Location)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const params = [email, phone, passwordHash, name, batchYear, course, currentJob, location];
+  await query(sql, params);
+  return { message: 'User registered successfully' };
+}
+
+// Login user and return JWT token
+async function loginUser(email, password) {
+  const sql = 'SELECT AlumniID, PasswordHash FROM Alumni WHERE Email = ?';
+  const results = await query(sql, [email]);
+  if (results.length === 0) {
+    throw new Error('User not found');
+  }
+
+  const user = results[0];
+  const isPasswordValid = await bcrypt.compare(password, user.PasswordHash);
+  if (!isPasswordValid) {
+    throw new Error('Invalid password');
+  }
+
+  const token = jwt.sign({ AlumniID: user.AlumniID }, JWT_SECRET, { expiresIn: '1h' });
+  return { token };
+}
+
+// JWT middleware example for Express.js routes
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+module.exports = { registerUser, loginUser, authenticateToken, query, pool };
+
