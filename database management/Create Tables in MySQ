@@ -15,8 +15,8 @@ CREATE TABLE Alumni (
 -- Admin Table
 CREATE TABLE Admin (
     AdminID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    Email VARCHAR(100)
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- Announcements Table
@@ -39,11 +39,12 @@ CREATE TABLE Events (
 -- EventRegistrations Table
 CREATE TABLE EventRegistrations (
     RegistrationID INT AUTO_INCREMENT PRIMARY KEY,
-    AlumniID INT,
-    EventID INT,
+    AlumniID INT NOT NULL,
+    EventID INT NOT NULL,
     RegisteredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE CASCADE,
-    FOREIGN KEY (EventID) REFERENCES Events(EventID) ON DELETE CASCADE
+    FOREIGN KEY (EventID) REFERENCES Events(EventID) ON DELETE CASCADE,
+    UNIQUE (AlumniID, EventID)
 );
 
 -- JobPostings Table
@@ -74,4 +75,32 @@ CREATE TABLE ContactAdmin (
     Message TEXT NOT NULL,
     SentAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE SET NULL
+);
+
+-- FundRequests Table
+CREATE TABLE FundRequests (
+    RequestID INT AUTO_INCREMENT PRIMARY KEY,
+    StudentName VARCHAR(100) NOT NULL,
+    EventName VARCHAR(255) NOT NULL,
+    Description TEXT,
+    RequestedAmount DECIMAL(10, 2),
+    Status VARCHAR(50) DEFAULT 'Pending',
+    AlumniID INT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE SET NULL
+);
+
+-- Mentorship Table
+CREATE TABLE Mentorship (
+    MentorshipID INT AUTO_INCREMENT PRIMARY KEY,
+    AlumniID INT NOT NULL,
+    StudentID INT NOT NULL,
+    StartDate DATE,
+    EndDate DATE,
+    Topics TEXT,
+    Status VARCHAR(50) DEFAULT 'Active',
+    Feedback TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (AlumniID) REFERENCES Alumni(AlumniID) ON DELETE CASCADE
+    -- Optional: FOREIGN KEY (StudentID) REFERENCES Students(StudentID) ON DELETE CASCADE
 );
