@@ -1,57 +1,108 @@
-•Insert new alumni
+Alumni Management (CRUD)
+-- Insert new alumni (use hashed password)
 INSERT INTO Alumni (Email, Phone, PasswordHash, Name, BatchYear, Course, CurrentJob, Location)
-VALUES ('example@email.com', '9876543210', 'hashed_password', 'John Doe', 2022, 'B.Tech CS', 'Software Engineer', 'Delhi');
+VALUES (?, ?, ?, ?, ?, ?, ?, ?); 
+-- params: [email, phone, passwordHash, name, batchYear, course, currentJob, location]
 
-•Select alumni by batch
-SELECT * FROM Alumni WHERE BatchYear = 2022;
+-- Fetch alumni by batch
+SELECT * FROM Alumni WHERE BatchYear = ?; 
+-- params: [batchYear]
 
-•Update alumni current job
-UPDATE Alumni SET CurrentJob = 'Senior Developer' WHERE AlumniID = 1;
-
-•Register for event
-INSERT INTO EventRegistrations (AlumniID, EventID) VALUES (1, 2);
-
-•Insert new alumni and fetch their profile immediately
-INSERT INTO Alumni (Email, Phone, PasswordHash, Name, BatchYear, Course, CurrentJob, Location)
-VALUES ('alumni1@example.com', '9876543210', 'hashed_password', 'Alice Smith', 2023, 'MCA', 'Data Analyst', 'Delhi');
-SELECT * FROM Alumni WHERE Email = 'alumni1@example.com';
-
-•Update alumni profile and check updated details
+-- Update alumni profile (name, job, location, course)
 UPDATE Alumni
-SET CurrentJob = 'Senior Data Analyst', Location = 'Bangalore'
-WHERE AlumniID = 1;
-SELECT Name, CurrentJob, Location FROM Alumni WHERE AlumniID = 1;
+SET Name = ?, CurrentJob = ?, Location = ?, Course = ?
+WHERE AlumniID = ?;
+-- params: [name, currentJob, location, course, alumniId]
 
-•Post a job and list all jobs posted by that alumni
-INSERT INTO JobPostings (PostedByAlumniID, JobTitle, Description, Company, Location)
-VALUES (1, 'Backend Developer Intern', '6-month internship at TechCorp', 'TechCorp', 'Delhi');
-SELECT JobID, JobTitle, Company, Location, PostedAt FROM JobPostings WHERE PostedByAlumniID = 1 ORDER BY PostedAt DESC;
+-- Delete alumni
+DELETE FROM Alumni WHERE AlumniID = ?;
+-- params: [alumniId]
 
-•Create an event, register an alumni, and list event registrations
+Event Handling
+-- Create new event
 INSERT INTO Events (EventName, Description, EventDate, Location)
-VALUES ('Alumni Meetup 2025', 'Annual reunion', '2025-12-15', 'Conference Hall');
+VALUES (?, ?, ?, ?);
+-- params: [eventName, description, eventDate, location]
 
+-- Register alumni for event (avoid duplicate via UNIQUE constraint)
 INSERT INTO EventRegistrations (AlumniID, EventID)
-VALUES (1, (SELECT EventID FROM Events WHERE EventName = 'Alumni Meetup 2025' LIMIT 1));
+VALUES (?, ?);
+-- params: [alumniId, eventId]
 
-SELECT er.RegistrationID, a.Name, e.EventName, er.RegisteredAt
+-- Get all event registrations for an alumni
+SELECT er.RegistrationID, e.EventName, e.EventDate, e.Location, er.RegisteredAt
 FROM EventRegistrations er
-JOIN Alumni a ON er.AlumniID = a.AlumniID
 JOIN Events e ON er.EventID = e.EventID
-WHERE e.EventName = 'Alumni Meetup 2025';
+WHERE er.AlumniID = ?;
+-- params: [alumniId]
 
-•Post announcements and list recent ones
+Job Postings
+-- Post a job
+INSERT INTO JobPostings (PostedByAlumniID, JobTitle, Description, Company, Location)
+VALUES (?, ?, ?, ?, ?);
+-- params: [alumniId, jobTitle, description, company, location]
+
+-- List all jobs
+SELECT JobID, JobTitle, Company, Location, PostedAt FROM JobPostings ORDER BY PostedAt DESC;
+
+-- List jobs posted by a specific alumni
+SELECT JobID, JobTitle, Company, Location, PostedAt FROM JobPostings WHERE PostedByAlumniID = ? ORDER BY PostedAt DESC;
+-- params: [alumniId]
+
+Announcements
+-- Post an announcement
 INSERT INTO Announcements (Title, Content)
-VALUES ('New Career Webinar', 'Join our webinar on career growth next Friday.');
+VALUES (?, ?);
+-- params: [title, content]
 
-SELECT AnnouncementID, Title, PostedAt FROM Announcements ORDER BY PostedAt DESC LIMIT 5;
+-- List recent announcements
+SELECT AnnouncementID, Title, Content, PostedAt FROM Announcements ORDER BY PostedAt DESC LIMIT ?;
+-- params: [limit]
 
-•Alumni giving feedback and contacting admin
+Feedback and Contact Admin
+-- Submit feedback
 INSERT INTO Feedback (AlumniID, Message)
-VALUES (1, 'Please organize more skill-building workshops.');
+VALUES (?, ?);
+-- params: [alumniId, message]
 
+-- Contact Admin
 INSERT INTO ContactAdmin (AlumniID, Message)
-VALUES (1, 'How can I update my profile photo?');
+VALUES (?, ?);
+-- params: [alumniId, message]
 
-SELECT * FROM Feedback WHERE AlumniID = 1;
-SELECT * FROM ContactAdmin WHERE AlumniID = 1;
+-- List all feedback by alumni
+SELECT * FROM Feedback WHERE AlumniID = ? ORDER BY SentAt DESC;
+-- params: [alumniId]
+
+-- List all messages sent to admin by alumni
+SELECT * FROM ContactAdmin WHERE AlumniID = ? ORDER BY SentAt DESC;
+-- params: [alumniId]
+
+Fund Requests and Mentorship
+-- Submit a fund request
+INSERT INTO FundRequests (StudentName, EventName, Description, RequestedAmount, AlumniID)
+VALUES (?, ?, ?, ?, ?);
+-- params: [studentName, eventName, description, requestedAmount, alumniIdOrNull]
+
+-- Update FundRequest status
+UPDATE FundRequests SET Status = ? WHERE RequestID = ?;
+-- params: [status, requestId]
+
+-- List pending fund requests
+SELECT * FROM FundRequests WHERE Status = 'Pending' ORDER BY CreatedAt DESC;
+
+-- Register mentorship relationship
+INSERT INTO Mentorship (AlumniID, StudentID, StartDate, Topics)
+VALUES (?, ?, ?, ?);
+-- params: [alumniId, studentId, startDate, topics]
+
+-- Get all mentorships for an alumni
+SELECT * FROM Mentorship WHERE AlumniID = ? ORDER BY StartDate DESC;
+-- params: [alumniId]
+
+Advanced Directory Search
+-- Search alumni by name, batch, course, or company (flexible search)
+SELECT * FROM Alumni
+WHERE (Name LIKE ? OR BatchYear LIKE ? OR Course LIKE ? OR CurrentJob LIKE ?);
+-- params: [`%searchTerm%`, `%searchTerm%`, `%searchTerm%`, `%searchTerm%`]
+
